@@ -1,7 +1,9 @@
 import {useEffect, useState} from 'react'
 import {Grid, GridColumn, Input, Item} from 'semantic-ui-react'
+import {debounce} from 'ts-debounce'
 import {Api} from '../api'
 import {university} from '../types'
+import Loading from './loading'
 
 interface IContainerUniversities {
   selectedCountry: string
@@ -17,51 +19,59 @@ export default function ContainerUniversities({selectedCountry}: IContainerUnive
   useEffect(() => {
     async function fetchData() {
       setUniversities([])
-      const result = await Api.searchUniversisies({country: selectedCountry, name: filterName})
+      setLoading(true)
+      const result = await Api.searchUniversisies({country: selectedCountry})
       setUniversities(result)
+      setLoading(false)
     }
     if (selectedCountry) {
-      setLoading(true)
-      fetchData()
-      setLoading(false)
+      const debouncedFetchData = debounce(fetchData, 500)
+      debouncedFetchData()
     } else {
+      setFilterName('')
       setUniversities([])
     }
-  }, [filterName, selectedCountry])
-
-  console.log(loading)
+  }, [selectedCountry])
   
   return (
     <>
       <Input
         placeholder='Введите название университета'
         value={filterName}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilterName(e.target.value)}
+        fluid
+        disabled={!selectedCountry}
+        style={{paddingTop: '10px'}}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setFilterName(e.target.value)
+        }}
       />
-      <Grid
-        columns='three'
-        celled
-      >
-        {universities.map((el) =>
-          <GridColumn key={el.name}>
-            <Item
-              key={el.name}
-              header={el.name}
-              description={el.country}
-              extra={
-                el.web_pages.map((page) =>
-                  <a
-                    href={page}
-                    key={page}
-                  >
-                    {page}
-                    <br />
-                  </a>)
-              }
-            />
-          </GridColumn>
-        )}
-      </Grid>
+      {!loading ?
+        <Grid
+          columns='three'
+          celled
+        >
+          {universities.filter((el) =>
+            el.name.toLowerCase().includes(filterName.toLowerCase())).map((el) =>
+            <GridColumn key={el.name}>
+              <Item
+                key={el.name}
+                header={el.name}
+                description={el.country}
+                extra={
+                  el.web_pages.map((page) =>
+                    <a
+                      href={page}
+                      key={page}
+                    >
+                      {page}
+                      <br />
+                    </a>)
+                }
+              />
+            </GridColumn>
+          )}
+        </Grid>
+        : <Loading />}
     </>
   )
 }
