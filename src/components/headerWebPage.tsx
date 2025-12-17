@@ -5,6 +5,6 @@ export default function HeaderWebPage() {
   return (
     <Header as='h2' icon textAlign='center'>
       <Icon name='users' circular />
-      <HeaderContent>Информация об университетов всех стран</HeaderContent>
+      <HeaderContent>Список университетов всех стран</HeaderContent>
     </Header>)
 }

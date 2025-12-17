@@ -14,12 +14,12 @@ export default function CountriesDropdown({selectedCountry, setSelectedCountry, 
 
   useEffect(() => {
     async function fetchData() {
-      setLoading(true)
       const result = await Api.getCounties()
       setCountries(result)
-      setLoading(false)
     }
+    setLoading(true)
     fetchData()
+    setLoading(false)
   }, [])
 
   return (
