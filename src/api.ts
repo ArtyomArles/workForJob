@@ -1,4 +1,4 @@
-import {countries, country} from './types'
+import {country, university} from './types'
 
 const linkUniversities = process.env.REACT_APP_LINK_UNIVERSITIES || ''
 const linkCountries = process.env.REACT_APP_LINK_COUNTRIES || ''
@@ -12,12 +12,15 @@ export class Api {
       if (!response.ok) {
         throw new Error(`HTTP ошибка! Код: ${response.status}`)
       }
+      const json = await response.json()
+      return json as Array<university>
     } catch (error) {
       console.log(`Ошибка ${error}`)
+      return []
     }
   }
 
-  static async getCounties(): Promise<countries> {
+  static async getCounties(): Promise<Array<country>> {
     try {
       const response = await fetch(`${linkCountries}/countries?locale%5Blang%5D=ru&apiKey=${authToken}`)
       if (!response.ok) {
@@ -27,8 +30,9 @@ export class Api {
       const result = json['result'].map((el: country) => ({
         key: el.name,
         text: el.name,
+        flag: el.iso.toLowerCase(),
         value: el.localizedNames.en === 'Russia' ? 'Russian Federation' : el.localizedNames.en
-      })) as countries
+      })) as Array<country>
       return result
     } catch (error) {
       console.log(`Ошибка ${error}`)
