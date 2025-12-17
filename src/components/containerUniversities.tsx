@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react'
 import {Grid, GridColumn, Input, Item} from 'semantic-ui-react'
-import {debounce} from 'ts-debounce'
 import {Api} from '../api'
 import {university} from '../types'
 import Loading from './loading'
@@ -25,8 +24,7 @@ export default function ContainerUniversities({selectedCountry}: IContainerUnive
       setLoading(false)
     }
     if (selectedCountry) {
-      const debouncedFetchData = debounce(fetchData, 500)
-      debouncedFetchData()
+      fetchData()
     } else {
       setFilterName('')
       setUniversities([])
@@ -55,7 +53,14 @@ export default function ContainerUniversities({selectedCountry}: IContainerUnive
             <GridColumn key={el.name}>
               <Item
                 key={el.name}
-                header={el.name}
+                header={
+                  <strong
+                    className='link'
+                    onClick={() => console.log(el.name)}
+                  >
+                    {el.name}
+                  </strong>
+                }
                 description={el.country}
                 extra={
                   el.web_pages.map((page) =>
