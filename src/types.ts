@@ -18,3 +18,8 @@ export type filter = {
   selectedCountry: string,
   filterName: string
 }
+
+export type modalState = {
+  open: boolean,
+  university: university
+}

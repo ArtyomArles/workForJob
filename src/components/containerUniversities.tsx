@@ -1,10 +1,12 @@
 import {useEffect, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {Grid, GridColumn, Input, Item} from 'semantic-ui-react'
+import {Grid, GridColumn, Input, Item, Statistic} from 'semantic-ui-react'
 import {Api} from '../api'
 import {setFilterName} from '../store/filter'
+import {setOpenModal, setUniversityOnModal} from '../store/modal'
 import {filter, university} from '../types'
 import Loading from './loading'
+import ModalComponent from './modalComponent'
 
 interface IContainerUniversities {
   selectedCountry: string
@@ -48,38 +50,55 @@ export default function ContainerUniversities({selectedCountry}: IContainerUnive
         fluid
       />
       {!loading ?
-        <Grid
-          columns='three'
-          celled
-        >
-          {universities.filter((el) =>
-            el.name.toLowerCase().includes(filterName.toLowerCase())).map((el) =>
-            <GridColumn key={el.name}>
-              <Item
-                key={el.name}
-                header={
-                  <strong
-                    className='link'
-                    onClick={() => console.log(el.name)}
-                  >
-                    {el.name}
-                  </strong>
-                }
-                description={el.country}
-                extra={
-                  el.web_pages.map((page) =>
-                    <a
-                      href={page}
-                      key={page}
-                    >
-                      {page}
-                      <br />
-                    </a>)
-                }
-              />
-            </GridColumn>
-          )}
-        </Grid>
+        <>
+          <Statistic
+            label="Найдено"
+            value={universities.filter((el) =>
+              el.name.toLowerCase().includes(filterName.toLowerCase())).length}
+            size='mini'
+            floated='right'
+            color='grey'
+          />
+          <ModalComponent
+            trigger={
+              <Grid
+                columns='three'
+                celled
+              >
+                {universities.filter((el) =>
+                  el.name.toLowerCase().includes(filterName.toLowerCase())).map((el) =>
+                  <GridColumn key={el.name}>
+                    <Item
+                      key={el.name}
+                      description={el.country}
+                      header={
+                        <strong
+                          className='link'
+                          onClick={() => {
+                            dispatch(setOpenModal())
+                            dispatch(setUniversityOnModal(el))
+                          }}
+                        >
+                          {el.name}
+                        </strong>
+                      }
+                      extra={
+                        el.web_pages.map((page) =>
+                          <a
+                            href={page}
+                            key={page}
+                          >
+                            {page}
+                            <br />
+                          </a>)
+                      }
+                    />
+                  </GridColumn>
+                )}
+              </Grid>
+            }
+          />
+        </>
         : <Loading />}
     </>
   )
