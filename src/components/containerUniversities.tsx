@@ -1,7 +1,9 @@
 import {useEffect, useState} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
 import {Grid, GridColumn, Input, Item} from 'semantic-ui-react'
 import {Api} from '../api'
-import {university} from '../types'
+import {setFilterName} from '../store/filter'
+import {filter, university} from '../types'
 import Loading from './loading'
 
 interface IContainerUniversities {
@@ -13,7 +15,8 @@ export default function ContainerUniversities({selectedCountry}: IContainerUnive
   
   const [universities, setUniversities] = useState<Array<university>>([])
   const [loading, setLoading] = useState<boolean>(false)
-  const [filterName, setFilterName] = useState<string>('')
+  const filterName = useSelector((state: { filter: filter }) => state.filter.filterName)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     async function fetchData() {
@@ -26,22 +29,23 @@ export default function ContainerUniversities({selectedCountry}: IContainerUnive
     if (selectedCountry) {
       fetchData()
     } else {
-      setFilterName('')
+      dispatch(setFilterName(''))
       setUniversities([])
     }
-  }, [selectedCountry])
+  }, [dispatch, selectedCountry])
   
   return (
     <>
       <Input
         placeholder='Введите название университета'
         value={filterName}
-        fluid
         disabled={!selectedCountry}
         style={{paddingTop: '10px'}}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setFilterName(e.target.value)
+          dispatch(setFilterName(e.target.value))
         }}
+        icon='search'
+        fluid
       />
       {!loading ?
         <Grid

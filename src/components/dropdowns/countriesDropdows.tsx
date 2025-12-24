@@ -1,16 +1,20 @@
-import {Dispatch, SetStateAction, SyntheticEvent, useEffect, useState} from 'react'
+import {SyntheticEvent, useEffect, useState} from 'react'
+import {useDispatch} from 'react-redux'
 import {Dropdown, DropdownProps} from 'semantic-ui-react'
 import {Api} from '../../api'
+import {setSelectedCountry} from '../../store/filter'
 import type {country} from '../../types'
 
 interface ICountriesDropdown extends DropdownProps {
-  setSelectedCountry: Dispatch<SetStateAction<string>>
   selectedCountry: string
 }
 
-export default function CountriesDropdown({selectedCountry, setSelectedCountry, ...props}: ICountriesDropdown) {
+export default function CountriesDropdown({selectedCountry, ...props}: ICountriesDropdown) {
+  
   const [countries, setCountries] = useState<Array<country>>([])
   const [loading, setLoading] = useState<boolean>(false)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     async function fetchData() {
@@ -31,7 +35,7 @@ export default function CountriesDropdown({selectedCountry, setSelectedCountry, 
       value={selectedCountry}
       loading={loading}
       onChange={(_e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
-        setSelectedCountry(typeof data.value === 'string' ? data.value : '')
+        dispatch(setSelectedCountry(typeof data.value === 'string' ? data.value : ''))
       }}
       {...props}
     />

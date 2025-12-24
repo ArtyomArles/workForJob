@@ -1,12 +1,13 @@
-import {useState} from 'react'
+import {useSelector} from 'react-redux'
 import {Container} from 'semantic-ui-react'
 import ContainerUniversities from './components/containerUniversities'
 import CountriesDropdown from './components/dropdowns/countriesDropdows'
 import HeaderWebPage from './components/headerWebPage'
+import {filter} from './types'
 
 export default function App() {
 
-  const [selectedCountry, setSelectedCountry] = useState<string>('')
+  const selectedCountry = useSelector((state: {filter : filter}) => state.filter.selectedCountry)
 
   return (
     <Container
@@ -16,9 +17,8 @@ export default function App() {
       <HeaderWebPage />
       <Container textAlign='center'>
         <CountriesDropdown
-          selectedCountry={selectedCountry}
-          setSelectedCountry={setSelectedCountry}
           clearable
+          selectedCountry={selectedCountry}
           style={{width: '300px'}}
         />
       </Container>

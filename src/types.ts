@@ -13,3 +13,8 @@ export type university = {
   country: string,
   name: string
 }
+
+export type filter = {
+  selectedCountry: string,
+  filterName: string
+}
